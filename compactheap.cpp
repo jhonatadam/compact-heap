@@ -1,6 +1,6 @@
 #include "compactheap.h"
 
-CompactHeap::CompactHeap()
+CompactHeap::CompactHeap() : compArray(0)
 {
 
 }

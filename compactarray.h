@@ -16,7 +16,7 @@ public:
     CompactArray(size_t b);
 
     // insert a new element at the end of array
-    void insert(long long value);
+    void insert(unsigned long value);
     void insert(string bits);
 
     // remove a element from the end of array
