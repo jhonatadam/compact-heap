@@ -5,10 +5,12 @@ using namespace std;
 
 int main()
 {
-    BitBlock b;
-    b.turnOn(7);
-//    b.turnOff(7);
+    BitArray ba;
+    ba.resize(18);
+    ba.turnOn(7);
+//    ba.turnOff(10);
 
-    cout << b.toString() << endl;
+    cout << ba[7] << endl;
+    cout << ba.toString() << endl;
     return 0;
 }
