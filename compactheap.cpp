@@ -78,8 +78,7 @@ unsigned long CompactHeap::removeMin()
 
     compArray.swap(0, compArray.getSize() - 1);
     compArray.remove();
-    if (compArray.getSize() > 1)
-        heapify(0);
+    heapify(0);
 
     return min;
 }
