@@ -12,7 +12,7 @@ CompactArray::CompactArray(size_t b, size_t size):
 
     for (size_t i = 0; i < size; i++)
     {
-        unsigned long value =  unsigned(rand()) % unsigned(pow(2, b));
+        unsigned long value = unsigned(rand()) % unsigned(pow(2, b));
         this->insert(value);
     }
 }
@@ -20,7 +20,7 @@ CompactArray::CompactArray(size_t b, size_t size):
 void CompactArray::insert(unsigned long value)
 {
     if ((b * (size+1)) > bits.getSize())
-        bits.resize(2 * b * size);
+        bits.resize(2 * bits.getSize());
 
     for (size_t i = 0; i < b; ++i)
     {
@@ -47,7 +47,12 @@ void CompactArray::insert(unsigned long value, size_t index)
 void CompactArray::remove()
 {
     if (size > 0)
+    {
         size--;
+
+        if ((b * size) < (bits.getSize()/4))
+            bits.resize(bits.getSize()/2);
+    }
 }
 
 unsigned long CompactArray::operator[](size_t index)
@@ -121,6 +126,9 @@ string CompactArray::toBitString()
 
 string CompactArray::toString()
 {
+    if (size == 0)
+        return "[]";
+
     string str = "[";
     for (size_t i = 0; i < (size - 1); i++)
         str = str + to_string(this->operator[](i)) + ", ";

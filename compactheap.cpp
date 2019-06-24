@@ -66,8 +66,8 @@ CompactHeap::CompactHeap(size_t b, size_t size): compArray(b, size)
 void CompactHeap::insert(unsigned long value)
 {
     compArray.insert(value);
-    size_t newValIdx = compArray.getSize() - 1;
 
+    size_t newValIdx = compArray.getSize() - 1;
     while(newValIdx != 0)
     {
         size_t parentIdx = this->parent(newValIdx);
@@ -84,10 +84,10 @@ unsigned long CompactHeap::removeMin()
         throw std::length_error("CompactHeap::removeMin(): heap is empty.");
 
     unsigned long min = compArray[0];
+
     compArray.swap(0, compArray.getSize() - 1);
     compArray.remove();
-
-    if (compArray.getSize() > 2)
+    if (compArray.getSize() > 1)
         heapify(0);
 
     return min;

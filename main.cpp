@@ -35,17 +35,17 @@ void testCompactHeap()
     CompactHeap ch(10, 16);
     cout << ch.toString() << endl;
 
-    ch.changePriority(0, 8);
-    cout << ch.toString() << endl;
-
-    ch.changePriority(1000, 1);
-    cout << ch.toString() << endl;
-
     while (ch.getSize() > 0)
     {
         cout << ch.removeMin() << " " << endl;
         cout << ch.toString() << endl;
     }
+
+    ch.insert(10);
+    ch.insert(10);
+    ch.insert(15);
+    ch.insert(5);
+    cout << ch.toString() << endl;
 }
 
 int main()
