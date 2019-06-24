@@ -12,12 +12,15 @@ class BitArray
     // array containing all bits
     vector<BitBlock> bitBlocks;
 
+    // size
+    size_t size;
+
     // index exeption
     string idxExeption = "BitArray: invalid index.\n";
 
 public:
     BitArray();
-    BitArray(size_t size);
+    BitArray(size_t size = 0);
 
     bool operator[](size_t index);
     void resize(size_t size);

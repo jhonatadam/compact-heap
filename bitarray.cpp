@@ -2,7 +2,7 @@
 
 BitArray::BitArray()
 {
-
+    size = 0;
 }
 
 BitArray::BitArray(size_t size)
@@ -12,7 +12,7 @@ BitArray::BitArray(size_t size)
 
 bool BitArray::operator[](size_t index)
 {
-    if (index >= getSize())
+    if (index >= size)
         throw out_of_range("BitArray::operator[](): invalid index.");
 
     size_t arrayIdx = index/bitBlocks.front().getBlockSize();
@@ -22,7 +22,7 @@ bool BitArray::operator[](size_t index)
 
 void BitArray::turnOn(size_t index)
 {
-    if (index >= getSize())
+    if (index >= size)
         throw out_of_range("BitArray::turnOn(): invalid index.");
 
     size_t arrayIdx = index/bitBlocks.front().getBlockSize();
@@ -32,7 +32,7 @@ void BitArray::turnOn(size_t index)
 
 void BitArray::turnOff(size_t index)
 {
-    if (index >= getSize())
+    if (index >= size)
         throw out_of_range("BitArray::turnOff(): invalid index.");
 
     size_t arrayIdx = index/bitBlocks.front().getBlockSize();
@@ -42,9 +42,7 @@ void BitArray::turnOff(size_t index)
 
 size_t BitArray::getSize()
 {
-    if (!bitBlocks.empty())
-        return bitBlocks.size() * bitBlocks.front().getBlockSize();
-    return 0;
+    return size;
 }
 
 void BitArray::resize(size_t size)
@@ -53,12 +51,21 @@ void BitArray::resize(size_t size)
     size_t numBlocks = size/bb.getBlockSize();
     numBlocks += (size % bb.getBlockSize()) > 0;
     bitBlocks.resize(numBlocks);
+    this->size = size;
 }
 
 string BitArray::toString()
 {
     string strBitBlocks = "";
-    for (BitBlock& b: bitBlocks)
-        strBitBlocks = strBitBlocks + b.toString() + " " ;
+    for (size_t i = 0; i < size; i++)
+    {
+        size_t arrayIdx = i/bitBlocks.front().getBlockSize();
+        size_t blockIdx = (i%bitBlocks.front().getBlockSize());
+        if (bitBlocks[arrayIdx][blockIdx])
+            strBitBlocks.append("1");
+        else
+            strBitBlocks.append("0");
+    }
+
     return strBitBlocks;
 }

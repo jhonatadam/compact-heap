@@ -3,6 +3,11 @@
 
 #include <bitarray.h>
 
+#include <iostream>
+#include <cmath>
+
+using namespace std;
+
 class CompactArray
 {
     // values saved are at most 2^b -1
@@ -14,6 +19,8 @@ class CompactArray
 
 public:
     CompactArray(size_t b);
+    // build a random array
+    CompactArray(size_t b, size_t size);
 
     // insert a new element at the end of array
     void insert(unsigned long value);
@@ -22,13 +29,20 @@ public:
     // remove a element from the end of array
     void remove();
 
-    // returns 1 if i is greater than j,
-    // 0 if they are equal and -1 otherwise.
-    int compare(size_t i, size_t j);
+    unsigned long operator[](size_t index);
+
+    // returns 1 if i is less than or equal to j;
+    // 0, otherwise
+    int isLessThanOrEqualTo(size_t i, size_t j);
 
     // swap
-    void swap(size_t i, size_t j);
+    void swap(const size_t i, const size_t j);
 
+    size_t getSize();
+    // returns an array bit string
+    string toBitString();
+    // return a string array
+    string toString();
 };
 
 #endif // COMPACTARRAY_H
