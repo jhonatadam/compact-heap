@@ -33,6 +33,23 @@ void CompactArray::insert(unsigned long value)
     size++;
 }
 
+void CompactArray::insert(unsigned long value, size_t index)
+{
+    for (size_t i = 0; i < b; ++i)
+    {
+        if ((value >> (b-i-1)) & 1)
+            bits.turnOn((b * index) + i);
+        else
+            bits.turnOff((b * index) + i);
+    }
+}
+
+void CompactArray::remove()
+{
+    if (size > 0)
+        size--;
+}
+
 unsigned long CompactArray::operator[](size_t index)
 {
     unsigned long value = 0;
@@ -79,7 +96,7 @@ void CompactArray::swap(const size_t i, const size_t j)
     }
 }
 
-size_t CompactArray::getSize()
+size_t CompactArray::getSize() const
 {
     return size;
 }

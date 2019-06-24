@@ -32,8 +32,20 @@ void testCompactArray()
 
 void testCompactHeap()
 {
-    CompactHeap ch(8, 16);
+    CompactHeap ch(10, 16);
     cout << ch.toString() << endl;
+
+    ch.changePriority(0, 8);
+    cout << ch.toString() << endl;
+
+    ch.changePriority(1000, 1);
+    cout << ch.toString() << endl;
+
+    while (ch.getSize() > 0)
+    {
+        cout << ch.removeMin() << " " << endl;
+        cout << ch.toString() << endl;
+    }
 }
 
 int main()

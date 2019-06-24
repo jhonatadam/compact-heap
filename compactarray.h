@@ -25,6 +25,11 @@ public:
     // insert a new element at the end of array
     void insert(unsigned long value);
 
+    // insert a new element in a given position (index)
+    // of array
+    void insert(unsigned long value, size_t index);
+
+
     // remove a element from the end of array
     void remove();
 
@@ -37,7 +42,7 @@ public:
     // swap
     void swap(const size_t i, const size_t j);
 
-    size_t getSize();
+    size_t getSize() const;
     // returns an array bit string
     string toBitString();
     // return a string array

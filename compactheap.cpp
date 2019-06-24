@@ -15,21 +15,34 @@ size_t CompactHeap::right(size_t index)
     return index * 2 + 2;
 }
 
-void CompactHeap::heapify(size_t item)
+void CompactHeap::climb(size_t index)
 {
-    size_t smaller = item;
-
-    if (left(item) < compArray.getSize())
-        if (!compArray.isLessThanOrEqualTo(smaller, left(item)))
-            smaller = left(item);
-
-    if (right(item) < compArray.getSize())
-        if (!compArray.isLessThanOrEqualTo(smaller, right(item)))
-            smaller = right(item);
-
-    if (smaller != item)
+    size_t newValIdx = index;
+    while(newValIdx != 0)
     {
-        compArray.swap(item, smaller);
+        size_t parentIdx = this->parent(newValIdx);
+        if (compArray.isLessThanOrEqualTo(parentIdx, newValIdx))
+            break;
+        compArray.swap(parentIdx, newValIdx);
+        newValIdx = parentIdx;
+    }
+}
+
+void CompactHeap::heapify(size_t index)
+{
+    size_t smaller = index;
+
+    if (left(index) < compArray.getSize())
+        if (!compArray.isLessThanOrEqualTo(smaller, left(index)))
+            smaller = left(index);
+
+    if (right(index) < compArray.getSize())
+        if (!compArray.isLessThanOrEqualTo(smaller, right(index)))
+            smaller = right(index);
+
+    if (smaller != index)
+    {
+        compArray.swap(index, smaller);
         heapify(smaller);
     }
 }
@@ -63,6 +76,40 @@ void CompactHeap::insert(unsigned long value)
         compArray.swap(parentIdx, newValIdx);
         newValIdx = parentIdx;
     }
+}
+
+unsigned long CompactHeap::removeMin()
+{
+    if (compArray.getSize() == 0)
+        throw std::length_error("CompactHeap::removeMin(): heap is empty.");
+
+    unsigned long min = compArray[0];
+    compArray.swap(0, compArray.getSize() - 1);
+    compArray.remove();
+
+    if (compArray.getSize() > 2)
+        heapify(0);
+
+    return min;
+}
+
+void CompactHeap::changePriority(unsigned long value, size_t index)
+{
+    if (compArray[index] > value)
+    {
+        compArray.insert(value, index);
+        climb(index);
+    }
+    else
+    {
+        compArray.insert(value, index);
+        heapify(index);
+    }
+}
+
+size_t CompactHeap::getSize()
+{
+    return compArray.getSize();
 }
 
 string CompactHeap::toString()

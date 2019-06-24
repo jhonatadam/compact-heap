@@ -11,7 +11,8 @@ class CompactHeap
     size_t left(size_t index);
     size_t right(size_t index);
 
-    void heapify(size_t i);
+    void climb(size_t index);
+    void heapify(size_t index);
 
 public:
     CompactHeap(size_t b);
@@ -19,9 +20,9 @@ public:
 
     void insert(unsigned long value);
     void insert(string bits);
-
     unsigned long removeMin();
-
+    void changePriority(unsigned long value, size_t index);
+    size_t getSize();
     string toString();
 
 };
