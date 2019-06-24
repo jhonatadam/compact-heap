@@ -24,7 +24,6 @@ public:
 
     // insert a new element at the end of array
     void insert(unsigned long value);
-    void insert(string bits);
 
     // remove a element from the end of array
     void remove();

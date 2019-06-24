@@ -32,7 +32,8 @@ void testCompactArray()
 
 void testCompactHeap()
 {
-    CompactHeap ch;
+    CompactHeap ch(8, 16);
+    cout << ch.toString() << endl;
 }
 
 int main()
