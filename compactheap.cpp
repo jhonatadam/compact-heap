@@ -66,16 +66,7 @@ CompactHeap::CompactHeap(size_t b, size_t size): compArray(b, size)
 void CompactHeap::insert(unsigned long value)
 {
     compArray.insert(value);
-
-    size_t newValIdx = compArray.getSize() - 1;
-    while(newValIdx != 0)
-    {
-        size_t parentIdx = this->parent(newValIdx);
-        if (compArray.isLessThanOrEqualTo(parentIdx, newValIdx))
-            break;
-        compArray.swap(parentIdx, newValIdx);
-        newValIdx = parentIdx;
-    }
+    climb(compArray.getSize() - 1);
 }
 
 unsigned long CompactHeap::removeMin()

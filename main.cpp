@@ -45,6 +45,10 @@ void testCompactHeap()
     ch.insert(10);
     ch.insert(15);
     ch.insert(5);
+    ch.insert(1);
+    ch.insert(15);
+    ch.insert(1);
+    ch.changePriority(0, 2);
     cout << ch.toString() << endl;
 }
 
