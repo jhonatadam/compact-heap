@@ -1,39 +1,41 @@
 #include "block.h"
 
+const size_t BitBlock::blockSize = sizeof(unsigned long) * 8;
+
+void BitBlock::clean(unsigned long &value, size_t begin, size_t end)
+{
+    unsigned long left = 0;
+    unsigned long right = 0;
+
+    if (begin > 0)
+        left =  (value >> (blockSize-begin)) << (blockSize-begin);
+    if (end < blockSize-1)
+        right = (value << (end+1)) >> (end+1);
+
+    value = left | right;
+}
+
 BitBlock::BitBlock()
 {
 
 }
 
-bool BitBlock::operator[](size_t index) const
+void BitBlock::update(unsigned long value, size_t begin, size_t end)
 {
+    if ((end >= blockSize) || (end < begin))
+        throw std::out_of_range("BitBlock::operator[](): invalid interval.");
 
-    if (index >= blockSize)
-        throw std::out_of_range("BitBlock::operator[](): invalid index.");
-
-    return ((block>>index) & 1);
+    unsigned long valueCopy = value;
+    clean(valueCopy, begin, end);
+    clean(block, begin, end);
+    block = block | (value ^ valueCopy);
 }
 
-void BitBlock::turnOn(size_t index)
+unsigned long BitBlock::getValue(size_t begin, size_t end)
 {
-    if (index >= blockSize)
-        throw std::out_of_range("BitBlock::turnOn(): invalid index.");
-
-    block = block | uint8_t(1<<index);
-}
-
-void BitBlock::turnOff(size_t index)
-{
-    if (index >= blockSize)
-        throw std::out_of_range("BitBlock::turnOff(): invalid index.");
-
-    if ((block>>index) & 1)
-        block = block ^ uint8_t(1<<index);
-}
-
-size_t BitBlock::getBlockSize() const
-{
-    return blockSize;
+    unsigned long blockCopy = block;
+    clean(blockCopy, begin, end);
+    return (block ^ blockCopy) >> (BitBlock::blockSize - end - 1);
 }
 
 string BitBlock::toString()
@@ -41,7 +43,7 @@ string BitBlock::toString()
     string str_block(blockSize, '0');
     for (size_t i = 0; i < blockSize; ++i)
     {
-        if ((block>>i) & 1)
+        if ((block>>(blockSize-i-1)) & 1)
             str_block[unsigned(i)] = '1';
     }
     return str_block;

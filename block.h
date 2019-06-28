@@ -1,7 +1,7 @@
 #ifndef BITBLOCK_H
 #define BITBLOCK_H
 
-#include <string>
+#include <iostream>
 #include <stdexcept>
 
 using namespace std;
@@ -9,25 +9,23 @@ using namespace std;
 class BitBlock
 {
     // block of bits
-    uint8_t block = 0;
-    // number of bits of the block
-    size_t blockSize = sizeof(uint8_t) * 8;
+    unsigned long block = 0;
+
+    void clean(unsigned long &value, size_t begin, size_t end);
 
 public:
+    // number of bits of the block
+    const static size_t blockSize;
+
     // contructor
     BitBlock();
 
-    // get bit at the 'index' position
-    bool operator[](size_t index) const;
-    // turn into 1 a bit at 'index'
-    void turnOn(size_t index);
-    // turn into 0 a bit at 'index'
-    void turnOff(size_t index);
-    // return the number of bits of the block
-    size_t getBlockSize() const;
-    // return a string containing the bits of the block
+    // it sets block range between 'begin' and 'end'
+    // with the same range in 'value'
+    void update(unsigned long value, size_t begin, size_t end);
+    unsigned long getValue(size_t begin, size_t end);
+    // it return a string containing block bits
     string toString();
-
 };
 
 #endif // BITBLOCK_H

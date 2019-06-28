@@ -1,46 +1,68 @@
 #include "compactarray.h"
 
-CompactArray::CompactArray(size_t b):
-    b(b), size(0), bits(b)
+void CompactArray::resizeBlocks(size_t newCapacity)
 {
+    size_t numBits = newCapacity * b;
+
+    size_t numBlocks = numBits/BitBlock::blockSize;
+    numBlocks += (numBits % BitBlock::blockSize) > 0;
+    if (numBlocks != blocks.size())
+        blocks.resize(numBlocks);
+
+    capacity = newCapacity;
+}
+
+CompactArray::CompactArray(size_t b):
+    b(b), size(0)
+{
+    resizeBlocks(1);
 }
 
 CompactArray::CompactArray(size_t b, size_t size):
-    b(b), size(0), bits(b)
+    b(b), size(0)
 {
-    srand(unsigned(time(nullptr)));
+    resizeBlocks(1);
 
+    srand(unsigned(time(nullptr)));
     for (size_t i = 0; i < size; i++)
     {
-        unsigned long value = unsigned(rand()) % unsigned(pow(2, b));
+        unsigned long max = 0;
+        max = ~max;
+        max = (max << (BitBlock::blockSize - b)) >> (BitBlock::blockSize - b);
+        unsigned long value = unsigned(rand()) % max;
         this->insert(value);
     }
 }
 
 void CompactArray::insert(unsigned long value)
 {
-    if ((b * (size+1)) > bits.getSize())
-        bits.resize(2 * bits.getSize());
-
-    for (size_t i = 0; i < b; ++i)
-    {
-        if ((value >> (b-i-1)) & 1)
-            bits.turnOn((b * size) + i);
-        else
-            bits.turnOff((b * size) + i);
-    }
-
+    if (size >= capacity)
+        resizeBlocks(capacity * 2);
     size++;
+    update(value, size-1);
 }
 
-void CompactArray::insert(unsigned long value, size_t index)
+void CompactArray::update(unsigned long value, size_t index)
 {
-    for (size_t i = 0; i < b; ++i)
+    if (index >= size)
+        throw out_of_range("CompactArray::update(): invalid index.");
+
+    size_t initialBit = b * index;
+    size_t block = initialBit / BitBlock::blockSize;
+    size_t blockBit = initialBit % BitBlock::blockSize;
+
+    // if 'value' fits in the block
+    if ((blockBit + b) <= BitBlock::blockSize)
     {
-        if ((value >> (b-i-1)) & 1)
-            bits.turnOn((b * index) + i);
-        else
-            bits.turnOff((b * index) + i);
+        value  = value << (BitBlock::blockSize - blockBit - b);
+        blocks[block].update(value, blockBit, blockBit + b - 1);
+    }
+    else
+    {
+        size_t first = BitBlock::blockSize - blockBit;
+        size_t second = b - first;
+        blocks[block].update(value>>second, blockBit, BitBlock::blockSize - 1);
+        blocks[block + 1].update(value<<(BitBlock::blockSize - second), 0, second - 1);
     }
 }
 
@@ -49,56 +71,43 @@ void CompactArray::remove()
     if (size > 0)
     {
         size--;
-
-        if ((b * size) < (bits.getSize()/4))
-            bits.resize(bits.getSize()/2);
+        if (size < (capacity / 4))
+            resizeBlocks(capacity/2);
     }
 }
 
 unsigned long CompactArray::operator[](size_t index)
 {
+    if (index >= size)
+        throw out_of_range("CompactArray::update(): invalid index.");
+
+    size_t initialBit = b * index;
+    size_t block = initialBit / BitBlock::blockSize;
+    size_t blockBit = initialBit % BitBlock::blockSize;
+
     unsigned long value = 0;
-    for (size_t i = 0; i < b; i++)
+
+    // if 'value' fits in the block
+    if ((blockBit + b) <= BitBlock::blockSize)
+        value = blocks[block].getValue(blockBit, blockBit + b - 1);
+    else
     {
-        if (bits[b * index + i])
-            value = value | (1<<(b - i - 1));
+        size_t first = BitBlock::blockSize - blockBit;
+        size_t second = b - first;
+        value = blocks[block].getValue(blockBit, BitBlock::blockSize - 1) << second;
+        value = value | blocks[block + 1].getValue(0, second - 1);
     }
+
     return value;
-}
-
-int CompactArray::isLessThanOrEqualTo(size_t i, size_t j)
-{
-    for (size_t a = 0; a < b; a++)
-    {
-        size_t bitI = b * i + a;
-        size_t bitJ = b * j + a;
-
-        if (!bits[bitI] && bits[bitJ])
-            return true;
-        else if (bits[bitI] && !bits[bitJ])
-            return false;
-    }
-    return true;
 }
 
 void CompactArray::swap(const size_t i, const size_t j)
 {
-    for (size_t a = 0; a < b; a++)
-    {
-        size_t bitI = b * i + a;
-        size_t bitJ = b * j + a;
+    unsigned long a = this->operator[](i);
+    unsigned long b = this->operator[](j);
 
-        if (!bits[bitI] && bits[bitJ])
-        {
-            bits.turnOn(bitI);
-            bits.turnOff(bitJ);
-        }
-        else if (bits[bitI] && !bits[bitJ])
-        {
-            bits.turnOff(bitI);
-            bits.turnOn(bitJ);
-        }
-    }
+    this->update(b, i);
+    this->update(a, j);
 }
 
 size_t CompactArray::getSize() const
@@ -110,17 +119,7 @@ string CompactArray::toBitString()
 {
     string strArray;
     for (size_t i = 0; i < size; i++)
-    {
-        for (size_t j = 0; j < b; j++)
-        {
-            if (bits[(i*b) + j])
-                strArray.append("1");
-            else
-                strArray.append("0");
-        }
-        strArray.append(" ");
-    }
-
+        strArray += blocks[i].toString();
     return strArray;
 }
 

@@ -1,10 +1,9 @@
 #ifndef COMPACTARRAY_H
 #define COMPACTARRAY_H
 
-#include <bitarray.h>
+#include <block.h>
 
-#include <iostream>
-#include <cmath>
+#include <vector>
 
 using namespace std;
 
@@ -12,10 +11,14 @@ class CompactArray
 {
     // values saved are at most 2^b -1
     const size_t b;
-    // array size
+    // blocks array size
     size_t size;
-    // bit array
-    BitArray bits;
+    // blocks array capacity
+    size_t capacity;
+    // block array
+    vector<BitBlock> blocks;
+
+    void resizeBlocks(size_t newCapacity);
 
 public:
     CompactArray(size_t b);
@@ -24,24 +27,14 @@ public:
 
     // insert a new element at the end of array
     void insert(unsigned long value);
-
     // insert a new element in a given position (index)
     // of array
-    void insert(unsigned long value, size_t index);
-
-
+    void update(unsigned long value, size_t index);
     // remove a element from the end of array
     void remove();
-
     unsigned long operator[](size_t index);
-
-    // returns 1 if i is less than or equal to j;
-    // 0, otherwise
-    int isLessThanOrEqualTo(size_t i, size_t j);
-
     // swap
     void swap(const size_t i, const size_t j);
-
     size_t getSize() const;
     // returns an array bit string
     string toBitString();

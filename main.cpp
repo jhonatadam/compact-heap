@@ -3,30 +3,27 @@
 
 using namespace std;
 
-void testBitArray()
+void testBitBlock()
 {
-    BitArray ba(15);
-
-    ba.turnOn(10);
-    ba.turnOn(5);
-    ba.turnOn(4);
-
-    ba.turnOff(4);
-
-    cout << ba.toString() << endl;
+    BitBlock bb;
+    unsigned long value = 0;
+    bb.update(~value, 0, 19);
+    bb.update(~value, 21, 41);
+    bb.update(~value, 43, 63);
+    cout << bb.toString() << endl;
 }
 
 void testCompactArray()
 {
-    CompactArray ca(6, 8);
-
+    CompactArray ca(8, 2);
+    ca.insert(1);
+    ca.insert(5);
     ca.insert(8);
-    ca.insert(8);
-    cout << ca.toBitString() << endl;
-    cout << ca.toString() << endl;
+    ca.insert(20);
+    cout << ca.toString();
 
-    ca.swap(1, 0);
-    cout << ca.toBitString() << endl;
+    ca.update(0, 0);
+    ca.update(15, 2);
     cout << ca.toString() << endl;
 }
 
@@ -48,13 +45,16 @@ void testCompactHeap()
     ch.insert(1);
     ch.insert(15);
     ch.insert(1);
+    cout << ch.toString() << endl;
     ch.changePriority(0, 2);
+    cout << ch.toString() << endl;
+    ch.changePriority(20, 2);
     cout << ch.toString() << endl;
 }
 
 int main()
 {
-//    testBitArray();
+//    testBitBlock();
 //    testCompactArray();
     testCompactHeap();
 

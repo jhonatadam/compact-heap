@@ -21,7 +21,7 @@ void CompactHeap::climb(size_t index)
     while(newValIdx != 0)
     {
         size_t parentIdx = this->parent(newValIdx);
-        if (compArray.isLessThanOrEqualTo(parentIdx, newValIdx))
+        if (compArray[parentIdx] <= compArray[newValIdx])
             break;
         compArray.swap(parentIdx, newValIdx);
         newValIdx = parentIdx;
@@ -33,11 +33,11 @@ void CompactHeap::heapify(size_t index)
     size_t smaller = index;
 
     if (left(index) < compArray.getSize())
-        if (!compArray.isLessThanOrEqualTo(smaller, left(index)))
+        if (compArray[smaller] > compArray[left(index)])
             smaller = left(index);
 
     if (right(index) < compArray.getSize())
-        if (!compArray.isLessThanOrEqualTo(smaller, right(index)))
+        if (compArray[smaller] > compArray[right(index)])
             smaller = right(index);
 
     if (smaller != index)
@@ -85,16 +85,13 @@ unsigned long CompactHeap::removeMin()
 
 void CompactHeap::changePriority(unsigned long value, size_t index)
 {
-    if (compArray[index] > value)
-    {
-        compArray.insert(value, index);
+    unsigned long previousValue = compArray[index];
+    compArray.update(value, index);
+
+    if (previousValue > value)
         climb(index);
-    }
     else
-    {
-        compArray.insert(value, index);
         heapify(index);
-    }
 }
 
 size_t CompactHeap::getSize()
